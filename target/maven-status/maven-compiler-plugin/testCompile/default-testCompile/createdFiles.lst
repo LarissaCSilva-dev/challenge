@@ -1,0 +1,4 @@
+com\example\dummyjson\config\WebClientConfigTest.class
+com\example\dummyjson\dto\ProductTest.class
+com\example\dummyjson\service\ProductServiceTest.class
+com\example\dummyjson\controller\ProductControllerTest.class

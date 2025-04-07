@@ -1,143 +1,85 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-    http://maven.apache.org/maven-v4_0_0.xsd">
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example</groupId>
-    <artifactId>dummyjson-client</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>dummyjson-client</name>
-    <description>Demo project for interacting with DummyJson API</description>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.12</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>dummyjson</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>dummyjson</name>
+    <description>Dummy JSON API consumer</description>
 
     <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <javadoc.doclint>none</javadoc.doclint>
+        <java.version>17</java.version>
+        <spring.boot.version>3.2.5</spring.boot.version>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web Starter -->
+        <!-- Spring Boot WebFlux -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
 
-        <!-- Jackson for JSON binding -->
+        <!-- Spring Boot Actuator (para o /health endpoint) -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
 
-        <!-- JUnit 4 -->
+        <!-- Spring Boot Test -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <version>${spring.boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId> <!-- Excluindo JUnit 4 -->
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Mockito -->
+        <!-- Mockito (para mocks nos testes) -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.3.3</version>
+            <version>3.11.2</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Javax -->
+        <!-- Validação do Spring Boot -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
     </dependencies>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <doclint>${javadoc.doclint}</doclint>
-                    <quiet>true</quiet>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>report-javadoc</id>
-                        <reports>
-                            <report>javadoc-no-fork</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.22.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
-                <configuration>
-                    <onlyAnalyze>${project.groupId}.-</onlyAnalyze>
-                    <threshold>Low</threshold>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
+
     <build>
         <plugins>
+            <!-- Plugin do Spring Boot -->
             <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>1.4.3</version>
-                <executions>
-                    <execution>
-                        <id>pi-report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>mutationCoverage</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+            </plugin>
+
+            <!-- Maven Compiler Plugin para Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <targetClasses>
-                        <param>com.example.dummyjson.*</param>
-                    </targetClasses>
-                    <targetTests>
-                        <param>com.example.dummyjson.*</param>
-                    </targetTests>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <source>17</source> <!-- Usando Java 17 -->
+                    <target>17</target> <!-- Usando Java 17 -->
                 </configuration>
             </plugin>
         </plugins>

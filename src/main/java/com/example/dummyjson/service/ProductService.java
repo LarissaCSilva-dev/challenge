@@ -1,30 +1,40 @@
 package com.example.dummyjson.service;
 
 import com.example.dummyjson.dto.Product;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.dummyjson.dto.ProductResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class ProductService {
 
-    private final String BASE_URL = "https://dummyjson.com/products";
+    private final WebClient webClient;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    // Injetando a URL base do application.yml
+    public ProductService(WebClient.Builder webClientBuilder, @Value("${dummy.api.base-url}") String baseUrl) {
+        this.webClient = webClientBuilder
+                .baseUrl(baseUrl)
+                .build();
+    }
 
     public List<Product> getAllProducts() {
-        Product[] products = restTemplate.getForObject(BASE_URL, Product[].class);
-        return Arrays.asList(products);
+        ProductResponse response = webClient.get()
+                .uri("/products")
+                .retrieve()
+                .bodyToMono(ProductResponse.class)
+                .block();
+
+        return response != null ? response.getProducts() : List.of();
     }
 
     public Product getProductById(Long id) {
-        String url = BASE_URL + "/" + id;
-        return restTemplate.getForObject(url, Product.class);
+        return webClient.get()
+                .uri("/products/{id}", id)
+                .retrieve()
+                .bodyToMono(Product.class)
+                .block();
     }
 }
