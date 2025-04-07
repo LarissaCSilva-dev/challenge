@@ -8,7 +8,6 @@ Este projeto é resultado de um code challenge com o objetivo de migrar um micro
 - ✅ Atualização do Spring Boot para **3.2.5**
 - ✅ Substituição de `RestTemplate` por `WebClient`
 - ✅ Parametrização da URL da API por ambiente (`application.yml`)
-- ✅ Implementação de tratamento de erros com exceção customizada e `@ControllerAdvice`
 - ✅ Criação de endpoint `/health` para verificação de status da aplicação
 - ✅ Atualização dos testes para **JUnit 5**
 - ✅ Todos os testes passam com sucesso 🎉
