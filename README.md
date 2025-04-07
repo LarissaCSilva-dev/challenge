@@ -10,11 +10,11 @@ Este projeto é resultado de um code challenge com o objetivo de migrar um micro
 - ✅ Parametrização da URL da API por ambiente (`application.yml`)
 - ✅ Criação de endpoint `/health` para verificação de status da aplicação
 - ✅ Atualização dos testes para **JUnit 5**
-- ✅ Todos os testes passam com sucesso 🎉
+- ✅ Todos os testes passam com sucesso 
 
 ---
 
-## 📦 Tecnologias utilizadas
+## Tecnologias utilizadas
 
 - Java 17
 - Spring Boot 3.2.5
@@ -24,7 +24,7 @@ Este projeto é resultado de um code challenge com o objetivo de migrar um micro
 
 ---
 
-## 🚀 Como rodar o projeto
+## Como rodar o projeto
 
 ### Pré-requisitos
 
