@@ -5,56 +5,65 @@ import com.example.dummyjson.dto.ProductResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class ProductServiceTest {
 
     private ProductService productService;
-    private WebClient.Builder webClientBuilder;
+    private WebClient webClient;
 
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        WebClient webClient = mock(WebClient.class);
-        webClientBuilder = mock(WebClient.Builder.class);
+        WebClient.Builder builder = mock(WebClient.Builder.class);
+        webClient = mock(WebClient.class);
+        WebClient.RequestHeadersUriSpec uriSpec = mock(WebClient.RequestHeadersUriSpec.class);
+        WebClient.RequestHeadersSpec<?> requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
 
-        // mocks da cadeia fluente do WebClient
-        RequestHeadersUriSpec<?> uriSpecMock = mock(RequestHeadersUriSpec.class);
-        RequestHeadersSpec<?> headersSpecMock = mock(RequestHeadersSpec.class);
-        ResponseSpec responseSpecMock = mock(ResponseSpec.class);
-
-        // objeto de retorno simulado
+        // Produto fake
         Product product = new Product();
         product.setId(1L);
         product.setTitle("Produto Teste");
 
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setProducts(List.of(product));
+        ProductResponse response = new ProductResponse();
+        response.setProducts(List.of(product));
 
-        // encadeamento dos mocks
-        when(webClientBuilder.baseUrl(anyString())).thenReturn(webClientBuilder);
-        when(webClientBuilder.build()).thenReturn(webClient);
+        // Mocks do builder
+        when(builder.baseUrl(anyString())).thenReturn(builder);
+        when(builder.build()).thenReturn(webClient);
 
-        when(webClient.get()).thenReturn((RequestHeadersUriSpec) uriSpecMock);
-        when(uriSpecMock.uri("/products")).thenReturn((RequestHeadersSpec) headersSpecMock);
-        when(headersSpecMock.retrieve()).thenReturn(responseSpecMock);
-        when(responseSpecMock.bodyToMono(ProductResponse.class)).thenReturn(Mono.just(productResponse));
+        // Mocks da cadeia WebClient
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(eq("/products"))).thenReturn(requestHeadersSpec);
+        when(uriSpec.uri(eq("/products/{id}"), eq(1L))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
 
-        productService = new ProductService(webClientBuilder, "https://dummyjson.com");
+        when(responseSpec.bodyToMono(eq(ProductResponse.class))).thenReturn(Mono.just(response));
+        when(responseSpec.bodyToMono(eq(Product.class))).thenReturn(Mono.just(product));
+
+        productService = new ProductService(builder, "https://dummyjson.com");
     }
+
 
     @Test
     void testGetAllProducts() {
-        List<Product> products = productService.getAllProducts();
+        List<Product> products = productService.getAllProducts().collectList().block();
 
         assertEquals(1, products.size());
         assertEquals("Produto Teste", products.get(0).getTitle());
-        assertEquals(1L, products.get(0).getId());
+    }
+
+    @Test
+    void testGetProductById() {
+        Product product = productService.getProductById(1L).block();
+
+        assertEquals("Produto Teste", product.getTitle());
+        assertEquals(1L, product.getId());
     }
 }

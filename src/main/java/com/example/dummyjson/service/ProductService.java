@@ -5,36 +5,32 @@ import com.example.dummyjson.dto.ProductResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class ProductService {
 
     private final WebClient webClient;
 
-    // Injetando a URL base do application.yml
-    public ProductService(WebClient.Builder webClientBuilder, @Value("${dummy.api.base-url}") String baseUrl) {
+    public ProductService(WebClient.Builder webClientBuilder, @Value("${dummy.api.base-url}") String apiUrl) {
         this.webClient = webClientBuilder
-                .baseUrl(baseUrl)
+                .baseUrl(apiUrl)
                 .build();
     }
 
-    public List<Product> getAllProducts() {
-        ProductResponse response = webClient.get()
+    public Flux<Product> getAllProducts() {
+        return webClient.get()
                 .uri("/products")
                 .retrieve()
                 .bodyToMono(ProductResponse.class)
-                .block();
-
-        return response != null ? response.getProducts() : List.of();
+                .flatMapMany(response -> Flux.fromIterable(response.getProducts()));
     }
 
-    public Product getProductById(Long id) {
+    public Mono<Product> getProductById(Long id) {
         return webClient.get()
                 .uri("/products/{id}", id)
                 .retrieve()
-                .bodyToMono(Product.class)
-                .block();
+                .bodyToMono(Product.class);
     }
 }
